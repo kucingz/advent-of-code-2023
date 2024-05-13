@@ -9,8 +9,16 @@ let part1LineResult = 0;
 
 //part2
 let part2Result = 0;
-let part2CountArray = [];
+let part2CountArray: number[] = [];
 let lines: string[] = [];
+
+const getNumbers = (line: string, winning?: boolean) => {
+    return line
+        .split(':')[1]
+        .split(' | ')
+        [winning ? 0 : 1].split(' ')
+        .filter((elm) => elm);
+};
 
 const part1 = (winningNumbers: string[], myNumbers: string[]) => {
     for (let i = 0; i < winningNumbers.length; i++) {
@@ -23,48 +31,17 @@ const part1 = (winningNumbers: string[], myNumbers: string[]) => {
     part1Result = part1LineResult + part1Result;
     part1LineResult = 0;
 };
-// const part2 = (winningNumbers: string[], myNumbers: string[]) => {
-//     for (let i = 0; i < winningNumbers.length; i++) {
-//         if (myNumbers.find((x) => x === winningNumbers[i])) {
-//             part2LineResult++;
-//         }
-//     }
-//     for (let x = 0; x < lines.length; x++) {
-//         for (let y = 0; y < 0; y++) {}
-//     }
-// };
 
-reader.on('line', (l: string) => {
-    const winningNumbers = l
-        .split(':')[1]
-        .split(' | ')[0]
-        .split(' ')
-        .filter((elm) => elm);
-    const myNumbers = l
-        .split(':')[1]
-        .split(' | ')[1]
-        .split(' ')
-        .filter((elm) => elm);
-    part1(winningNumbers, myNumbers);
-    lines.push(l);
-});
-reader.on('close', () => {
+const part2 = () => {
     let tmpCount = 0;
     for (let i = 0; i < lines.length; i++) {
         part2CountArray[i] = 1;
     }
 
     for (let x = 0; x < lines.length; x++) {
-        const winningNumbers = lines[x]
-            .split(':')[1]
-            .split(' | ')[0]
-            .split(' ')
-            .filter((elm) => elm);
-        const myNumbers = lines[x]
-            .split(':')[1]
-            .split(' | ')[1]
-            .split(' ')
-            .filter((elm) => elm);
+        const winningNumbers = getNumbers(lines[x], true);
+        const myNumbers = getNumbers(lines[x]);
+
         for (let y = 0; y < winningNumbers.length; y++) {
             if (myNumbers.find((x) => x === winningNumbers[y])) {
                 tmpCount++;
@@ -78,7 +55,18 @@ reader.on('close', () => {
         }
         tmpCount = 0;
     }
+};
 
+reader.on('line', (l: string) => {
+    const winningNumbers = getNumbers(l, true);
+
+    const myNumbers = getNumbers(l);
+    part1(winningNumbers, myNumbers);
+    lines.push(l);
+});
+
+reader.on('close', () => {
+    part2();
     part2CountArray.forEach((el) => (part2Result += el));
     console.log(part1Result, part2Result);
 });
